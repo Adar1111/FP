@@ -12,7 +12,7 @@ from src.storage.database import find_measurement_by_hash, insert_measurement
 from src.storage.files import save_original_file
 
 
-def ingest_measurement(source_path: str | Path) -> dict[str, str | int]:
+def ingest_measurement(source_path: str | Path) -> dict[str, str | int]:  # Save measurement and handle duplicates
     """Save a new measurement and return its metadata with status 'ingested'.
 
     Return status 'duplicate' with the existing metadata for a known hash.

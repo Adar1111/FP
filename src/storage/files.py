@@ -7,7 +7,7 @@ from pathlib import Path
 _RAW_DIRECTORY = Path(__file__).resolve().parents[2] / "data" / "raw"
 
 
-def save_original_file(source_path: str | Path, measurement_id: str) -> Path:
+def save_original_file(source_path: str | Path, measurement_id: str) -> Path:  # Save original file copy
     """Copy a file to data/raw/<measurement_id>/<original_filename>.
 
     Return the copied file's path. Keep the source unchanged.

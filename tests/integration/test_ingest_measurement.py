@@ -13,7 +13,7 @@ from src.storage import database
 
 
 class IngestMeasurementTests(unittest.TestCase):
-    def setUp(self) -> None:
+    def setUp(self) -> None:  # Prepare temporary ingestion test environment
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
@@ -30,7 +30,7 @@ class IngestMeasurementTests(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
-    def test_success_saves_file_and_metadata(self) -> None:
+    def test_success_saves_file_and_metadata(self) -> None:  # Verify file and metadata storage
         before = self.source.stat()
         result = ingest_measurement(self.source)
         self.assertEqual(result["status"], "ingested")
@@ -44,7 +44,7 @@ class IngestMeasurementTests(unittest.TestCase):
         self.assertEqual(datetime.fromisoformat(result["ingested_at"]).tzinfo, timezone.utc)
         self.assertEqual(database.get_measurement(result["measurement_id"], self.database), result)
 
-    def test_duplicate_does_not_copy_or_insert(self) -> None:
+    def test_duplicate_does_not_copy_or_insert(self) -> None:  # Verify duplicates prevent repeated storage
         original = ingest_measurement(self.source)
         renamed = self.root / "renamed.bin"
         renamed.write_bytes(self.source.read_bytes())
@@ -57,7 +57,7 @@ class IngestMeasurementTests(unittest.TestCase):
         self.assertEqual(result["measurement_id"], original["measurement_id"])
         self.assertEqual(database.list_measurements(self.database), [original])
 
-    def test_insertion_failure_keeps_saved_path_and_id(self) -> None:
+    def test_insertion_failure_keeps_saved_path_and_id(self) -> None:  # Verify insertion failure retains metadata
         with patch("src.processing.ingest_measurement.insert_measurement", side_effect=sqlite3.OperationalError("database is locked")):
             result = ingest_measurement(self.source)
         self.assertEqual(result["status"], "failed")
@@ -67,7 +67,7 @@ class IngestMeasurementTests(unittest.TestCase):
         self.assertEqual(Path(result["stored_path"]).read_bytes(), self.source.read_bytes())
         self.assertEqual(database.list_measurements(self.database), [])
 
-    def test_copy_failure_does_not_insert(self) -> None:
+    def test_copy_failure_does_not_insert(self) -> None:  # Verify copy failure prevents insertion
         with patch("src.processing.ingest_measurement.save_original_file", side_effect=OSError("disk full")):
             with patch("src.processing.ingest_measurement.insert_measurement") as insert:
                 result = ingest_measurement(self.source)
@@ -77,7 +77,7 @@ class IngestMeasurementTests(unittest.TestCase):
         self.assertTrue(result["measurement_id"])
         self.assertEqual(result["error"], "disk full")
 
-    def test_invalid_source_fails_before_database_or_copy(self) -> None:
+    def test_invalid_source_fails_before_database_or_copy(self) -> None:  # Verify invalid sources prevent ingestion
         for source, error in [(self.root / "missing", FileNotFoundError), (self.root, IsADirectoryError)]:
             with self.subTest(source=source):
                 with self.assertRaises(error):

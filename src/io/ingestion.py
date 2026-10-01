@@ -20,7 +20,7 @@ PathInput = Union[str, PathLike[str]]
 _HASH_CHUNK_SIZE = 1024 * 1024
 
 
-def _as_path(path: PathInput) -> Path:
+def _as_path(path: PathInput) -> Path:  # Convert input to path
     """Convert a path-like value to :class:`pathlib.Path`."""
 
     try:
@@ -29,7 +29,7 @@ def _as_path(path: PathInput) -> Path:
         raise TypeError("path must be a string or path-like object") from exc
 
 
-def inspect_file(path: PathInput) -> Dict[str, Union[str, int]]:
+def inspect_file(path: PathInput) -> Dict[str, Union[str, int]]:  # Validate file and return metadata
     """Validate a file and return basic metadata about it.
 
     The file must exist, be a regular file, contain at least one byte, and be
@@ -75,7 +75,7 @@ def inspect_file(path: PathInput) -> Dict[str, Union[str, int]]:
     }
 
 
-def calculate_file_hash(path: PathInput) -> str:
+def calculate_file_hash(path: PathInput) -> str:  # Calculate file content hash
     """Return the SHA-256 hash of a file as a hexadecimal string.
 
     The file is opened in binary mode and read incrementally, allowing files

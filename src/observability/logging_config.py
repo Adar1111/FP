@@ -15,7 +15,7 @@ _CONFIG_LOCK = RLock()
 class JsonFormatter(logging.Formatter):
     """Write only the event fields, without measurement contents."""
 
-    def format(self, record: logging.LogRecord) -> str:
+    def format(self, record: logging.LogRecord) -> str:  # Format log event as JSON
         event = {
             "timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),
             "event": record.getMessage(),
@@ -33,12 +33,12 @@ class JsonFormatter(logging.Formatter):
 class EventFileHandler(logging.FileHandler):
     """Raise write errors instead of letting logging hide them."""
 
-    def handleError(self, record: logging.LogRecord) -> None:
+    def handleError(self, record: logging.LogRecord) -> None:  # Raise log write errors
         # Logging calls this inside the write error's exception handler.
         raise
 
 
-def configure_logging(log_path: str | Path = DEFAULT_LOG_PATH) -> logging.Logger:
+def configure_logging(log_path: str | Path = DEFAULT_LOG_PATH) -> logging.Logger:  # Configure JSON file logging
     """Append UTF-8 JSON lines to one log file. Reuse repeated configuration."""
     path = Path(log_path).resolve()
     with _CONFIG_LOCK:
@@ -59,7 +59,7 @@ def configure_logging(log_path: str | Path = DEFAULT_LOG_PATH) -> logging.Logger
         return logger
 
 
-def log_event(event: str, level: str, stage: str, measurement_id: str | None = None, **details: str | float | None) -> None:
+def log_event(event: str, level: str, stage: str, measurement_id: str | None = None, **details: str | float | None) -> None:  # Record ingestion log event
     """Record an event. Configure the default log on first use; raise errors."""
     if level not in ("INFO", "WARNING", "ERROR"):
         raise ValueError("level must be INFO, WARNING, or ERROR")
