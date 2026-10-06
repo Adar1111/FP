@@ -1,7 +1,9 @@
-"""Utilities for inspecting measurement files and calculating file hashes.
-
-This module deliberately does not parse file contents or interpret measurement
-signals. It only performs filesystem validation and binary file hashing.
+""" Geting raw data check if the log is propr and return:
+{
+    "path": "",
+    "original_name": "",
+    "size": 
+}
 """
 
 from __future__ import annotations
@@ -20,7 +22,7 @@ PathInput = Union[str, PathLike[str]]
 _HASH_CHUNK_SIZE = 1024 * 1024
 
 
-def _as_path(path: PathInput) -> Path:  # Convert input to path
+def _as_path(path: PathInput) -> Path:
     """Convert a path-like value to :class:`pathlib.Path`."""
 
     try:
@@ -29,7 +31,7 @@ def _as_path(path: PathInput) -> Path:  # Convert input to path
         raise TypeError("path must be a string or path-like object") from exc
 
 
-def inspect_file(path: PathInput) -> Dict[str, Union[str, int]]:  # Validate file and return metadata
+def inspect_file(path: PathInput) -> Dict[str, Union[str, int]]:
     """Validate a file and return basic metadata about it.
 
     The file must exist, be a regular file, contain at least one byte, and be
@@ -75,7 +77,7 @@ def inspect_file(path: PathInput) -> Dict[str, Union[str, int]]:  # Validate fil
     }
 
 
-def calculate_file_hash(path: PathInput) -> str:  # Calculate file content hash
+def calculate_file_hash(path: PathInput) -> str:
     """Return the SHA-256 hash of a file as a hexadecimal string.
 
     The file is opened in binary mode and read incrementally, allowing files
